@@ -1,0 +1,2198 @@
+openapi: 3.0.3
+info:
+  title: API информационной системы автосервиса
+  version: 1.0.0
+  description: MVP backend API для управления автосервисом
+
+servers:
+  - url: http://127.0.0.1:8080
+    description: Локальный сервер
+
+tags:
+  - name: Клиенты
+    description: Операции с клиентами
+  - name: Автомобили
+    description: Операции с автомобилями
+  - name: Мастера
+    description: Операции с мастерами
+  - name: Услуги
+    description: Операции с услугами
+  - name: Запчасти
+    description: Операции с запчастями
+  - name: Заказы
+    description: Операции с заказами
+  - name: Услуги заказа
+    description: Операции с услугами внутри заказа
+  - name: Запчасти заказа
+    description: Операции с запчастями внутри заказа
+  - name: Оплаты
+    description: Операции с оплатами заказа
+
+paths:
+  /clients:
+    get:
+      tags:
+        - Клиенты
+      summary: Получить список всех клиентов
+      operationId: getAllClients
+      responses:
+        '200':
+          description: Список клиентов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ClientResponse'
+
+    post:
+      tags:
+        - Клиенты
+      summary: Создать нового клиента
+      operationId: createClient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateClientRequest'
+      responses:
+        '201':
+          description: Клиент успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /clients/{id}:
+    get:
+      tags:
+        - Клиенты
+      summary: Получить клиента по идентификатору
+      operationId: getClientById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор клиента
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Клиент найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientResponse'
+        '400':
+          description: Некорректный идентификатор клиента
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Клиент не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Клиенты
+      summary: Обновить клиента по идентификатору
+      operationId: updateClient
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор клиента
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateClientRequest'
+      responses:
+        '200':
+          description: Клиент успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Клиент не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Клиенты
+      summary: Удалить клиента по идентификатору
+      operationId: deleteClient
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор клиента
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Клиент успешно удален
+        '400':
+          description: Некорректный идентификатор клиента
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Клиент не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /cars:
+    get:
+      tags:
+        - Автомобили
+      summary: Получить список всех автомобилей
+      operationId: getAllCars
+      responses:
+        '200':
+          description: Список автомобилей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CarResponse'
+
+    post:
+      tags:
+        - Автомобили
+      summary: Создать новый автомобиль
+      operationId: createCar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCarRequest'
+      responses:
+        '201':
+          description: Автомобиль успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CarResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Клиент не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /cars/{id}:
+    get:
+      tags:
+        - Автомобили
+      summary: Получить автомобиль по идентификатору
+      operationId: getCarById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор автомобиля
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Автомобиль найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CarResponse'
+        '400':
+          description: Некорректный идентификатор автомобиля
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Автомобиль не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Автомобили
+      summary: Обновить автомобиль по идентификатору
+      operationId: updateCar
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор автомобиля
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCarRequest'
+      responses:
+        '200':
+          description: Автомобиль успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CarResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Автомобиль или клиент не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Автомобили
+      summary: Удалить автомобиль по идентификатору
+      operationId: deleteCar
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор автомобиля
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Автомобиль успешно удален
+        '400':
+          description: Некорректный идентификатор автомобиля
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Автомобиль не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /clients/{clientId}/cars:
+    get:
+      tags:
+        - Автомобили
+      summary: Получить список автомобилей клиента
+      operationId: getCarsByClientId
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          description: Идентификатор клиента
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Список автомобилей клиента
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CarResponse'
+        '400':
+          description: Некорректный идентификатор клиента
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Клиент не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /masters:
+    get:
+      tags:
+        - Мастера
+      summary: Получить список всех мастеров
+      operationId: getAllMasters
+      responses:
+        '200':
+          description: Список мастеров
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MasterResponse'
+
+    post:
+      tags:
+        - Мастера
+      summary: Создать нового мастера
+      operationId: createMaster
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMasterRequest'
+      responses:
+        '201':
+          description: Мастер успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MasterResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /masters/{id}:
+    get:
+      tags:
+        - Мастера
+      summary: Получить мастера по идентификатору
+      operationId: getMasterById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор мастера
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Мастер найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MasterResponse'
+        '400':
+          description: Некорректный идентификатор мастера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Мастер не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Мастера
+      summary: Обновить мастера по идентификатору
+      operationId: updateMaster
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор мастера
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMasterRequest'
+      responses:
+        '200':
+          description: Мастер успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MasterResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Мастер не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Мастера
+      summary: Удалить мастера по идентификатору
+      operationId: deleteMaster
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор мастера
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Мастер успешно удален
+        '400':
+          description: Некорректный идентификатор мастера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Мастер не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /services:
+    get:
+      tags:
+        - Услуги
+      summary: Получить список всех услуг
+      operationId: getAllServices
+      parameters:
+        - name: id
+          in: query
+          required: false
+          description: Не используется
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Список услуг
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServiceResponse'
+
+    post:
+      tags:
+        - Услуги
+      summary: Создать новую услугу
+      operationId: createService
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateServiceRequest'
+      responses:
+        '201':
+          description: Услуга успешно создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /services/{id}:
+    get:
+      tags:
+        - Услуги
+      summary: Получить услугу по идентификатору
+      operationId: getServiceById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор услуги
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Услуга найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+        '400':
+          description: Некорректный идентификатор услуги
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Услуга не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Услуги
+      summary: Обновить услугу по идентификатору
+      operationId: updateService
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор услуги
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateServiceRequest'
+      responses:
+        '200':
+          description: Услуга успешно обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Услуга не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Услуги
+      summary: Удалить услугу по идентификатору
+      operationId: deleteService
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор услуги
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Услуга успешно удалена
+        '400':
+          description: Некорректный идентификатор услуги
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Услуга не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /parts:
+    get:
+      tags:
+        - Запчасти
+      summary: Получить список всех запчастей
+      operationId: getAllParts
+      responses:
+        '200':
+          description: Список запчастей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PartResponse'
+
+    post:
+      tags:
+        - Запчасти
+      summary: Создать новую запчасть
+      operationId: createPart
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePartRequest'
+      responses:
+        '201':
+          description: Запчасть успешно создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /parts/{id}:
+    get:
+      tags:
+        - Запчасти
+      summary: Получить запчасть по идентификатору
+      operationId: getPartById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор запчасти
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Запчасть найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartResponse'
+        '400':
+          description: Некорректный идентификатор запчасти
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Запчасть не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Запчасти
+      summary: Обновить запчасть по идентификатору
+      operationId: updatePart
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор запчасти
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePartRequest'
+      responses:
+        '200':
+          description: Запчасть успешно обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Запчасть не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Запчасти
+      summary: Удалить запчасть по идентификатору
+      operationId: deletePart
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор запчасти
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Запчасть успешно удалена
+        '400':
+          description: Некорректный идентификатор запчасти
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Запчасть не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /orders:
+    get:
+      tags:
+        - Заказы
+      summary: Получить список заказов
+      operationId: getAllOrders
+      parameters:
+        - name: clientId
+          in: query
+          required: false
+          description: Фильтр по идентификатору клиента
+          schema:
+            type: integer
+            format: int64
+        - name: status
+          in: query
+          required: false
+          description: Фильтр по статусу заказа
+          schema:
+            type: string
+            enum:
+              - CREATED
+              - IN_PROGRESS
+              - COMPLETED
+              - PAID
+              - CANCELED
+      responses:
+        '200':
+          description: Список заказов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: Некорректные параметры фильтрации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      tags:
+        - Заказы
+      summary: Создать новый заказ
+      operationId: createOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+      responses:
+        '201':
+          description: Заказ успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Связанная сущность не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /orders/{id}:
+    get:
+      tags:
+        - Заказы
+      summary: Получить заказ по идентификатору
+      operationId: getOrderById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор заказа
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Заказ найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: Некорректный идентификатор заказа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Заказ не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Заказы
+      summary: Обновить заказ по идентификатору
+      operationId: updateOrder
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор заказа
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrderRequest'
+      responses:
+        '200':
+          description: Заказ успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Заказ или связанная сущность не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Заказы
+      summary: Удалить заказ по идентификатору
+      operationId: deleteOrder
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор заказа
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Заказ успешно удален
+        '400':
+          description: Некорректный идентификатор заказа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Заказ не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /orders/{id}/details:
+    get:
+      tags:
+        - Заказы
+      summary: Получить полную карточку заказа
+      operationId: getOrderDetails
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор заказа
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Полная информация по заказу
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDetailsResponse'
+        '400':
+          description: Некорректный идентификатор заказа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Заказ не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /orders/{orderId}/services:
+    get:
+      tags:
+        - Услуги заказа
+      summary: Получить список услуг в заказе
+      operationId: getOrderServices
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: Идентификатор заказа
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Список услуг в заказе
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderServiceResponse'
+        '400':
+          description: Некорректный идентификатор заказа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Заказ не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      tags:
+        - Услуги заказа
+      summary: Добавить услугу в заказ
+      operationId: addOrderService
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: Идентификатор заказа
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddOrderServiceRequest'
+      responses:
+        '201':
+          description: Услуга успешно добавлена в заказ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderServiceResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Заказ или услуга не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /orders/{orderId}/services/{serviceId}:
+    put:
+      tags:
+        - Услуги заказа
+      summary: Обновить услугу внутри заказа
+      operationId: updateOrderService
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: Идентификатор заказа
+          schema:
+            type: integer
+            format: int64
+        - name: serviceId
+          in: path
+          required: true
+          description: Идентификатор услуги
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrderServiceRequest'
+      responses:
+        '200':
+          description: Услуга в заказе успешно обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderServiceResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Заказ или позиция услуги в заказе не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Услуги заказа
+      summary: Удалить услугу из заказа
+      operationId: deleteOrderService
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: Идентификатор заказа
+          schema:
+            type: integer
+            format: int64
+        - name: serviceId
+          in: path
+          required: true
+          description: Идентификатор услуги
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Услуга успешно удалена из заказа
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Заказ или позиция услуги в заказе не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /orders/{orderId}/parts:
+    get:
+      tags:
+        - Запчасти заказа
+      summary: Получить список запчастей в заказе
+      operationId: getOrderParts
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: Идентификатор заказа
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Список запчастей в заказе
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderPartResponse'
+        '400':
+          description: Некорректный идентификатор заказа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Заказ не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      tags:
+        - Запчасти заказа
+      summary: Добавить запчасть в заказ
+      operationId: addOrderPart
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: Идентификатор заказа
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddOrderPartRequest'
+      responses:
+        '201':
+          description: Запчасть успешно добавлена в заказ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderPartResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Заказ или запчасть не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /orders/{orderId}/parts/{partId}:
+    put:
+      tags:
+        - Запчасти заказа
+      summary: Обновить запчасть внутри заказа
+      operationId: updateOrderPart
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: Идентификатор заказа
+          schema:
+            type: integer
+            format: int64
+        - name: partId
+          in: path
+          required: true
+          description: Идентификатор запчасти
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrderPartRequest'
+      responses:
+        '200':
+          description: Запчасть в заказе успешно обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderPartResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Заказ или позиция запчасти в заказе не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Запчасти заказа
+      summary: Удалить запчасть из заказа
+      operationId: deleteOrderPart
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: Идентификатор заказа
+          schema:
+            type: integer
+            format: int64
+        - name: partId
+          in: path
+          required: true
+          description: Идентификатор запчасти
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Запчасть успешно удалена из заказа
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Заказ или позиция запчасти в заказе не найдены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /orders/{orderId}/payments:
+    get:
+      tags:
+        - Оплаты
+      summary: Получить список оплат по заказу
+      operationId: getOrderPayments
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: Идентификатор заказа
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Список оплат
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PaymentResponse'
+        '400':
+          description: Некорректный идентификатор заказа
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Заказ не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      tags:
+        - Оплаты
+      summary: Создать оплату по заказу
+      operationId: createPayment
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: Идентификатор заказа
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePaymentRequest'
+      responses:
+        '201':
+          description: Оплата успешно создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Заказ не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    ClientResponse:
+      type: object
+      required:
+        - id
+        - fullName
+        - phone
+        - registrationDate
+        - status
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        fullName:
+          type: string
+          example: Иван Иванов
+        phone:
+          type: string
+          example: "+79990001122"
+        email:
+          type: string
+          nullable: true
+          example: ivan@test.com
+        address:
+          type: string
+          nullable: true
+          example: Москва
+        registrationDate:
+          type: string
+          example: "2026-03-22T10:15:30"
+        status:
+          type: string
+          enum:
+            - REGULAR
+            - VIP
+          example: REGULAR
+
+    CreateClientRequest:
+      type: object
+      required:
+        - fullName
+        - phone
+      properties:
+        fullName:
+          type: string
+          example: Иван Иванов
+        phone:
+          type: string
+          example: "+79990001122"
+        email:
+          type: string
+          nullable: true
+          example: ivan@test.com
+        address:
+          type: string
+          nullable: true
+          example: Москва
+        status:
+          type: string
+          enum:
+            - REGULAR
+            - VIP
+          default: REGULAR
+          example: REGULAR
+
+    UpdateClientRequest:
+      type: object
+      required:
+        - fullName
+        - phone
+        - status
+      properties:
+        fullName:
+          type: string
+          example: Иван Сергеев
+        phone:
+          type: string
+          example: "+79990001122"
+        email:
+          type: string
+          nullable: true
+          example: ivan.sergeev@test.com
+        address:
+          type: string
+          nullable: true
+          example: Казань
+        status:
+          type: string
+          enum:
+            - REGULAR
+            - VIP
+          example: VIP
+
+    CarResponse:
+      type: object
+      required:
+        - id
+        - clientId
+        - brand
+        - model
+        - plateNumber
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        clientId:
+          type: integer
+          format: int64
+          example: 1
+        brand:
+          type: string
+          example: Toyota
+        model:
+          type: string
+          example: Camry
+        year:
+          type: integer
+          nullable: true
+          example: 2018
+        plateNumber:
+          type: string
+          example: A123BC77
+        vin:
+          type: string
+          nullable: true
+          example: JTNB11HK303123456
+        mileage:
+          type: integer
+          nullable: true
+          example: 85000
+
+    CreateCarRequest:
+      type: object
+      required:
+        - clientId
+        - brand
+        - model
+        - plateNumber
+      properties:
+        clientId:
+          type: integer
+          format: int64
+          example: 1
+        brand:
+          type: string
+          example: Toyota
+        model:
+          type: string
+          example: Camry
+        year:
+          type: integer
+          nullable: true
+          example: 2018
+        plateNumber:
+          type: string
+          example: A123BC77
+        vin:
+          type: string
+          nullable: true
+          example: JTNB11HK303123456
+        mileage:
+          type: integer
+          nullable: true
+          example: 85000
+
+    UpdateCarRequest:
+      type: object
+      required:
+        - clientId
+        - brand
+        - model
+        - plateNumber
+      properties:
+        clientId:
+          type: integer
+          format: int64
+          example: 1
+        brand:
+          type: string
+          example: Toyota
+        model:
+          type: string
+          example: Camry рестайлинг
+        year:
+          type: integer
+          nullable: true
+          example: 2019
+        plateNumber:
+          type: string
+          example: A123BC77
+        vin:
+          type: string
+          nullable: true
+          example: JTNB11HK303123456
+        mileage:
+          type: integer
+          nullable: true
+          example: 91000
+
+    MasterResponse:
+      type: object
+      required:
+        - id
+        - fullName
+        - employmentStatus
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        fullName:
+          type: string
+          example: Алексей Смирнов
+        specialization:
+          type: string
+          nullable: true
+          example: Диагностика двигателя
+        experienceYears:
+          type: integer
+          nullable: true
+          example: 7
+        phone:
+          type: string
+          nullable: true
+          example: "+79990003344"
+        email:
+          type: string
+          nullable: true
+          example: master@test.com
+        employmentStatus:
+          type: string
+          enum:
+            - ACTIVE
+            - INACTIVE
+          example: ACTIVE
+
+    CreateMasterRequest:
+      type: object
+      required:
+        - fullName
+      properties:
+        fullName:
+          type: string
+          example: Алексей Смирнов
+        specialization:
+          type: string
+          nullable: true
+          example: Диагностика двигателя
+        experienceYears:
+          type: integer
+          nullable: true
+          example: 7
+        phone:
+          type: string
+          nullable: true
+          example: "+79990003344"
+        email:
+          type: string
+          nullable: true
+          example: master@test.com
+        employmentStatus:
+          type: string
+          enum:
+            - ACTIVE
+            - INACTIVE
+          default: ACTIVE
+          example: ACTIVE
+
+    UpdateMasterRequest:
+      type: object
+      required:
+        - fullName
+        - employmentStatus
+      properties:
+        fullName:
+          type: string
+          example: Алексей Смирнов
+        specialization:
+          type: string
+          nullable: true
+          example: Ремонт подвески
+        experienceYears:
+          type: integer
+          nullable: true
+          example: 8
+        phone:
+          type: string
+          nullable: true
+          example: "+79990003344"
+        email:
+          type: string
+          nullable: true
+          example: master.updated@test.com
+        employmentStatus:
+          type: string
+          enum:
+            - ACTIVE
+            - INACTIVE
+          example: ACTIVE
+
+    ServiceResponse:
+      type: object
+      required:
+        - id
+        - name
+        - basePrice
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Замена масла
+        description:
+          type: string
+          nullable: true
+          example: Стандартная замена моторного масла
+        basePrice:
+          type: string
+          example: "1500.00"
+        normHours:
+          type: string
+          nullable: true
+          example: "1.50"
+
+    CreateServiceRequest:
+      type: object
+      required:
+        - name
+        - basePrice
+      properties:
+        name:
+          type: string
+          example: Замена масла
+        description:
+          type: string
+          nullable: true
+          example: Стандартная замена моторного масла
+        basePrice:
+          type: string
+          example: "1500.00"
+        normHours:
+          type: string
+          nullable: true
+          example: "1.50"
+
+    UpdateServiceRequest:
+      type: object
+      required:
+        - name
+        - basePrice
+      properties:
+        name:
+          type: string
+          example: Премиум замена масла
+        description:
+          type: string
+          nullable: true
+          example: Замена моторного масла премиум-класса
+        basePrice:
+          type: string
+          example: "2200.00"
+        normHours:
+          type: string
+          nullable: true
+          example: "2.00"
+
+    PartResponse:
+      type: object
+      required:
+        - id
+        - name
+        - article
+        - price
+        - unit
+        - stockQuantity
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Масляный фильтр
+        article:
+          type: string
+          example: OF-12345
+        price:
+          type: string
+          example: "550.00"
+        unit:
+          type: string
+          example: pcs
+        stockQuantity:
+          type: integer
+          example: 12
+
+    CreatePartRequest:
+      type: object
+      required:
+        - name
+        - article
+        - price
+      properties:
+        name:
+          type: string
+          example: Масляный фильтр
+        article:
+          type: string
+          example: OF-12345
+        price:
+          type: string
+          example: "550.00"
+        unit:
+          type: string
+          default: pcs
+          example: pcs
+        stockQuantity:
+          type: integer
+          default: 0
+          example: 12
+
+    UpdatePartRequest:
+      type: object
+      required:
+        - name
+        - article
+        - price
+        - unit
+        - stockQuantity
+      properties:
+        name:
+          type: string
+          example: Премиум масляный фильтр
+        article:
+          type: string
+          example: OF-12345
+        price:
+          type: string
+          example: "650.00"
+        unit:
+          type: string
+          example: pcs
+        stockQuantity:
+          type: integer
+          example: 20
+
+    OrderResponse:
+      type: object
+      required:
+        - id
+        - clientId
+        - carId
+        - status
+        - createdAt
+        - totalAmount
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        clientId:
+          type: integer
+          format: int64
+          example: 1
+        carId:
+          type: integer
+          format: int64
+          example: 1
+        masterId:
+          type: integer
+          format: int64
+          nullable: true
+          example: 1
+        description:
+          type: string
+          nullable: true
+          example: Первичная диагностика и замена масла
+        comment:
+          type: string
+          nullable: true
+          example: Клиент просит выполнить сегодня
+        status:
+          type: string
+          enum:
+            - CREATED
+            - IN_PROGRESS
+            - COMPLETED
+            - PAID
+            - CANCELED
+          example: CREATED
+        createdAt:
+          type: string
+          example: "2026-03-22T14:30:00"
+        plannedCompletionAt:
+          type: string
+          nullable: true
+          example: "2026-03-23T18:00:00"
+        completedAt:
+          type: string
+          nullable: true
+          example: "2026-03-23T17:20:00"
+        totalAmount:
+          type: string
+          example: "0"
+
+    CreateOrderRequest:
+      type: object
+      required:
+        - clientId
+        - carId
+      properties:
+        clientId:
+          type: integer
+          format: int64
+          example: 1
+        carId:
+          type: integer
+          format: int64
+          example: 1
+        masterId:
+          type: integer
+          format: int64
+          nullable: true
+          example: 1
+        description:
+          type: string
+          nullable: true
+          example: Первичная диагностика
+        comment:
+          type: string
+          nullable: true
+          example: Клиент ожидает
+        status:
+          type: string
+          enum:
+            - CREATED
+            - IN_PROGRESS
+            - COMPLETED
+            - PAID
+            - CANCELED
+          default: CREATED
+          example: CREATED
+        plannedCompletionAt:
+          type: string
+          nullable: true
+          example: "2026-03-23T18:00:00"
+
+    UpdateOrderRequest:
+      type: object
+      required:
+        - clientId
+        - carId
+        - status
+      properties:
+        clientId:
+          type: integer
+          format: int64
+          example: 1
+        carId:
+          type: integer
+          format: int64
+          example: 1
+        masterId:
+          type: integer
+          format: int64
+          nullable: true
+          example: 1
+        description:
+          type: string
+          nullable: true
+          example: Диагностика завершена
+        comment:
+          type: string
+          nullable: true
+          example: Ожидается согласование работ
+        status:
+          type: string
+          enum:
+            - CREATED
+            - IN_PROGRESS
+            - COMPLETED
+            - PAID
+            - CANCELED
+          example: IN_PROGRESS
+        plannedCompletionAt:
+          type: string
+          nullable: true
+          example: "2026-03-23T18:00:00"
+        completedAt:
+          type: string
+          nullable: true
+          example: "2026-03-23T17:20:00"
+
+    PaymentResponse:
+      type: object
+      required:
+        - id
+        - orderId
+        - amount
+        - paymentMethod
+        - paymentStatus
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        orderId:
+          type: integer
+          format: int64
+          example: 1
+        amount:
+          type: string
+          example: "3000.00"
+        paymentMethod:
+          type: string
+          enum:
+            - CASH
+            - CARD
+          example: CARD
+        paymentStatus:
+          type: string
+          enum:
+            - PENDING
+            - PAID
+            - FAILED
+          example: PAID
+        paidAt:
+          type: string
+          nullable: true
+          example: "2026-03-23T16:40:00"
+
+    CreatePaymentRequest:
+      type: object
+      required:
+        - amount
+        - paymentMethod
+      properties:
+        amount:
+          type: string
+          example: "3000.00"
+        paymentMethod:
+          type: string
+          enum:
+            - CASH
+            - CARD
+          example: CARD
+        paymentStatus:
+          type: string
+          enum:
+            - PENDING
+            - PAID
+            - FAILED
+          default: PAID
+          example: PAID
+
+    OrderPartResponse:
+      type: object
+      required:
+        - orderId
+        - partId
+        - quantity
+        - priceAtOrder
+      properties:
+        orderId:
+          type: integer
+          format: int64
+          example: 1
+        partId:
+          type: integer
+          format: int64
+          example: 2
+        quantity:
+          type: integer
+          example: 1
+        priceAtOrder:
+          type: string
+          example: "550.00"
+
+    AddOrderPartRequest:
+      type: object
+      required:
+        - partId
+      properties:
+        partId:
+          type: integer
+          format: int64
+          example: 2
+        quantity:
+          type: integer
+          default: 1
+          example: 2
+        priceAtOrder:
+          type: string
+          nullable: true
+          example: "550.00"
+
+    UpdateOrderPartRequest:
+      type: object
+      required:
+        - quantity
+        - priceAtOrder
+      properties:
+        quantity:
+          type: integer
+          example: 3
+        priceAtOrder:
+          type: string
+          example: "600.00"
+
+    OrderServiceResponse:
+      type: object
+      required:
+        - orderId
+        - serviceId
+        - quantity
+        - priceAtOrder
+      properties:
+        orderId:
+          type: integer
+          format: int64
+          example: 1
+        serviceId:
+          type: integer
+          format: int64
+          example: 2
+        quantity:
+          type: integer
+          example: 1
+        priceAtOrder:
+          type: string
+          example: "1500.00"
+
+    AddOrderServiceRequest:
+      type: object
+      required:
+        - serviceId
+      properties:
+        serviceId:
+          type: integer
+          format: int64
+          example: 2
+        quantity:
+          type: integer
+          default: 1
+          example: 1
+        priceAtOrder:
+          type: string
+          nullable: true
+          example: "1500.00"
+
+    UpdateOrderServiceRequest:
+      type: object
+      required:
+        - quantity
+        - priceAtOrder
+      properties:
+        quantity:
+          type: integer
+          example: 2
+        priceAtOrder:
+          type: string
+          example: "1600.00"
+
+    OrderDetailsResponse:
+      type: object
+      required:
+        - order
+        - services
+        - parts
+        - payments
+      properties:
+        order:
+          $ref: '#/components/schemas/OrderResponse'
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderServiceResponse'
+        parts:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderPartResponse'
+        payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentResponse'
+
+    ErrorResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: Клиент не найден
+        code:
+          type: string
+          nullable: true
+          example: NOT_FOUND
