@@ -99,3 +99,6 @@ database:
   url: "jdbc:postgresql://localhost:5432/autoservice_db"
   user: "postgres"
   password: "your_password"
+```
+
+### P.S. Коммиты в master, потому что разработка велась 1 человеком. Автор: Родион Пиперов
