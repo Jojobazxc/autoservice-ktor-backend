@@ -3,7 +3,9 @@ package com.example.plugins
 import com.example.common.BadRequestException
 import com.example.common.ConflictException
 import com.example.common.ErrorResponse
+import com.example.common.ForbiddenException
 import com.example.common.NotFoundException
+import com.example.common.UnauthorizedException
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -40,6 +42,26 @@ fun Application.configureStatusPages() {
                 ErrorResponse(
                     message = cause.message ?: "Conflict",
                     code = "CONFLICT"
+                )
+            )
+        }
+
+        exception<UnauthorizedException> { call, cause ->
+            call.respond(
+                HttpStatusCode.Unauthorized,
+                ErrorResponse(
+                    message = cause.message ?: "Unauthorized",
+                    code = "UNAUTHORIZED"
+                )
+            )
+        }
+
+        exception<ForbiddenException> { call, cause ->
+            call.respond(
+                HttpStatusCode.Forbidden,
+                ErrorResponse(
+                    message = cause.message ?: "Forbidden",
+                    code = "FORBIDDEN"
                 )
             )
         }

@@ -10,6 +10,9 @@ class ApplicationTest {
 
     @Test
     fun testRoot() = testApplication {
+        environment {
+            config = io.ktor.server.config.MapApplicationConfig("database.enabled" to "false")
+        }
         application {
             module()
         }

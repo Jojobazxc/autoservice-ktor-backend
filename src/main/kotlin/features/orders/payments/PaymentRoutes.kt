@@ -2,6 +2,8 @@ package com.example.features.orders.payments
 
 import com.example.common.BadRequestException
 import com.example.common.NotFoundException
+import com.example.common.enums.UserRole
+import com.example.features.auth.authorized
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -13,6 +15,7 @@ fun Application.configurePaymentRoutes() {
     val repository = PaymentRepository()
 
     routing {
+        authorized(UserRole.ADMIN, UserRole.ACCOUNTANT) {
         route("/orders/{orderId}/payments") {
             get {
                 val orderId = call.parameters["orderId"]?.toLongOrNull()
@@ -39,6 +42,7 @@ fun Application.configurePaymentRoutes() {
                 val createdPayment = repository.create(orderId, request)
                 call.respond(HttpStatusCode.Created, createdPayment)
             }
+        }
         }
     }
 }

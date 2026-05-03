@@ -2,6 +2,8 @@ package com.example.features.masters
 
 import com.example.common.BadRequestException
 import com.example.common.NotFoundException
+import com.example.common.enums.UserRole
+import com.example.features.auth.authorized
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -12,6 +14,7 @@ fun Application.configureMasterRoutes() {
     val repository = MasterRepository()
 
     routing {
+        authorized(UserRole.ADMIN, UserRole.MANAGER) {
         route("/masters") {
             get {
                 call.respond(repository.getAll())
@@ -62,6 +65,7 @@ fun Application.configureMasterRoutes() {
 
                 call.respond(HttpStatusCode.NoContent)
             }
+        }
         }
     }
 }

@@ -8,7 +8,12 @@ servers:
   - url: http://127.0.0.1:8080
     description: Локальный сервер
 
+security:
+  - bearerAuth: []
+
 tags:
+  - name: Auth
+    description: Authentication and JWT token issuing
   - name: Клиенты
     description: Операции с клиентами
   - name: Автомобили
@@ -29,6 +34,33 @@ tags:
     description: Операции с оплатами заказа
 
 paths:
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Логин и получение JWT токена
+      operationId: login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: JWT токет получен успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401':
+          description: Invalid login or password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /clients:
     get:
       tags:
@@ -1394,7 +1426,54 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
+    LoginRequest:
+      type: object
+      required:
+        - login
+        - password
+      properties:
+        login:
+          type: string
+          example: admin
+        password:
+          type: string
+          format: password
+          example: admin123
+
+    TokenResponse:
+      type: object
+      required:
+        - token
+        - tokenType
+        - expiresInMillis
+        - role
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiJ9...
+        tokenType:
+          type: string
+          example: Bearer
+        expiresInMillis:
+          type: integer
+          format: int64
+          example: 86400000
+        role:
+          type: string
+          enum:
+            - ADMIN
+            - MANAGER
+            - MECHANIC
+            - ACCOUNTANT
+          example: ADMIN
+
     ClientResponse:
       type: object
       required:

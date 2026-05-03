@@ -101,4 +101,34 @@ database:
   password: "your_password"
 ```
 
-### P.S. Коммиты в master, потому что разработка велась 1 человеком. Автор: Родион Пиперов
+## JWT authorization
+
+The API uses Bearer JWT authorization for protected endpoints. Login is available at:
+
+```http
+POST /auth/login
+```
+
+Example request:
+
+```json
+{
+  "login": "admin",
+  "password": "admin123"
+}
+```
+
+The default `admin` account is intended for local/demo use only. Change it before using a shared environment.
+
+JWT settings are configured in `src/main/resources/application.yaml`:
+
+```yaml
+jwt:
+  issuer: "autoservice-backend"
+  audience: "autoservice-api"
+  realm: "autoservice"
+  secret: "change-me"
+  expirationMillis: 86400000
+```
+
+Supported roles: `ADMIN`, `MANAGER`, `MECHANIC`, `ACCOUNTANT`. Refresh tokens are not implemented in this MVP.
