@@ -2,6 +2,8 @@ package com.example.features.cars
 
 import com.example.common.BadRequestException
 import com.example.common.NotFoundException
+import com.example.common.enums.UserRole
+import com.example.features.auth.authorized
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -12,6 +14,7 @@ fun Application.configureCarRoutes() {
     val repository = CarRepository()
 
     routing {
+        authorized(UserRole.ADMIN, UserRole.MANAGER) {
         route("/cars") {
             get {
                 call.respond(repository.getAll())
@@ -83,6 +86,7 @@ fun Application.configureCarRoutes() {
 
                 call.respond(repository.getByClientId(clientId))
             }
+        }
         }
     }
 }

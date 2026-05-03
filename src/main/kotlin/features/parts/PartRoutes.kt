@@ -2,6 +2,8 @@ package com.example.features.parts
 
 import com.example.common.BadRequestException
 import com.example.common.NotFoundException
+import com.example.common.enums.UserRole
+import com.example.features.auth.authorized
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
@@ -19,6 +21,7 @@ fun Application.configurePartRoutes() {
     val repository = PartRepository()
 
     routing {
+        authorized(UserRole.ADMIN, UserRole.MANAGER, UserRole.MECHANIC) {
         route("/parts") {
             get {
                 call.respond(repository.getAll())
@@ -83,6 +86,7 @@ fun Application.configurePartRoutes() {
 
                 call.respond(HttpStatusCode.NoContent)
             }
+        }
         }
     }
 }

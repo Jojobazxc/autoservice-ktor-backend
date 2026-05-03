@@ -2,6 +2,8 @@ package com.example.features.orders.services
 
 import com.example.common.BadRequestException
 import com.example.common.NotFoundException
+import com.example.common.enums.UserRole
+import com.example.features.auth.authorized
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -13,6 +15,7 @@ fun Application.configureOrderServiceRoutes() {
     val repository = OrderServiceRepository()
 
     routing {
+        authorized(UserRole.ADMIN, UserRole.MANAGER, UserRole.MECHANIC) {
         route("/orders/{orderId}/services") {
             get {
                 val orderId = call.parameters["orderId"]?.toLongOrNull()
@@ -88,6 +91,7 @@ fun Application.configureOrderServiceRoutes() {
 
                 call.respond(HttpStatusCode.NoContent)
             }
+        }
         }
     }
 }
