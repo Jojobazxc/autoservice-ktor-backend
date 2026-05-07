@@ -1,5 +1,7 @@
 package com.example.features.orders.services
 
+import com.example.common.ConflictException
+import com.example.common.enums.OrderStatus
 import com.example.database.tables.OrderPartsTable
 import com.example.database.tables.OrderServicesTable
 import com.example.database.tables.OrdersTable
@@ -52,6 +54,7 @@ class OrderServiceRepository {
     }
 
     fun add(orderId: Long, request: AddOrderServiceRequest): OrderServiceResponse = transaction {
+        ensureOrderIsEditable(orderId)
         val actualPrice = request.priceAtOrder?.toBigDecimal() ?: getServiceBasePrice(request.serviceId)
 
         OrderServicesTable.insert {
@@ -74,6 +77,7 @@ class OrderServiceRepository {
     }
 
     fun update(orderId: Long, serviceId: Long, request: UpdateOrderServiceRequest): Boolean = transaction {
+        ensureOrderIsEditable(orderId)
         val updatedRows = OrderServicesTable.update({
             (OrderServicesTable.orderId eq orderId) and
                     (OrderServicesTable.serviceId eq serviceId)
@@ -90,6 +94,7 @@ class OrderServiceRepository {
     }
 
     fun delete(orderId: Long, serviceId: Long): Boolean = transaction {
+        ensureOrderIsEditable(orderId)
         val deletedRows = OrderServicesTable.deleteWhere {
             (OrderServicesTable.orderId eq orderId) and
                     (OrderServicesTable.serviceId eq serviceId)
@@ -119,6 +124,17 @@ class OrderServiceRepository {
 
         OrdersTable.update({ OrdersTable.id eq orderId }) {
             it[totalAmount] = serviceSum + partsSum
+        }
+    }
+
+    private fun ensureOrderIsEditable(orderId: Long) {
+        val status = OrdersTable
+            .selectAll()
+            .where { OrdersTable.id eq orderId }
+            .single()[OrdersTable.status]
+
+        if (status == OrderStatus.COMPLETED || status == OrderStatus.PAID || status == OrderStatus.CANCELED) {
+            throw ConflictException("Completed, paid or canceled order composition cannot be changed")
         }
     }
 

@@ -33,6 +33,9 @@ tags:
   - name: Оплаты
     description: Операции с оплатами заказа
 
+  - name: Accounting reports
+    description: Accounting dashboard reports for ADMIN and ACCOUNTANT roles
+
 paths:
   /auth/login:
     post:
@@ -1000,6 +1003,98 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /orders/{id}/complete:
+    post:
+      tags:
+        - Р—Р°РєР°Р·С‹
+      summary: Complete in-progress order
+      operationId: completeOrder
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Order identifier
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Order completed. If the order is already fully paid, status may become PAID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: Invalid order identifier or mechanic account is not linked to master
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Access denied or mechanic is not assigned to this order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Order cannot be completed from current state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /orders/{id}/cancel:
+    post:
+      tags:
+        - Р—Р°РєР°Р·С‹
+      summary: Cancel order
+      operationId: cancelOrder
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Order identifier
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Order canceled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: Invalid order identifier
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Order cannot be canceled from current state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /orders/{id}/details:
     get:
       tags:
@@ -1350,6 +1445,184 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /payments:
+    get:
+      tags:
+        - РћРїР»Р°С‚С‹
+      summary: Get payment list
+      operationId: getPayments
+      parameters:
+        - name: status
+          in: query
+          required: false
+          description: Payment status filter
+          schema:
+            type: string
+            enum:
+              - PENDING
+              - PAID
+              - FAILED
+        - name: method
+          in: query
+          required: false
+          description: Payment method filter
+          schema:
+            type: string
+            enum:
+              - CASH
+              - CARD
+        - name: from
+          in: query
+          required: false
+          description: Start date in ISO-8601 format, inclusive
+          schema:
+            type: string
+            format: date
+            example: "2026-05-01"
+        - name: to
+          in: query
+          required: false
+          description: End date in ISO-8601 format, inclusive
+          schema:
+            type: string
+            format: date
+            example: "2026-05-31"
+      responses:
+        '200':
+          description: Payment list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PaymentResponse'
+        '400':
+          description: Invalid filter parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /payments/report:
+    get:
+      tags:
+        - РћРїР»Р°С‚С‹
+      summary: Get payment report summary
+      operationId: getPaymentReport
+      parameters:
+        - name: status
+          in: query
+          required: false
+          description: Payment status filter
+          schema:
+            type: string
+            enum:
+              - PENDING
+              - PAID
+              - FAILED
+        - name: method
+          in: query
+          required: false
+          description: Payment method filter
+          schema:
+            type: string
+            enum:
+              - CASH
+              - CARD
+        - name: from
+          in: query
+          required: false
+          description: Start date in ISO-8601 format, inclusive
+          schema:
+            type: string
+            format: date
+            example: "2026-05-01"
+        - name: to
+          in: query
+          required: false
+          description: End date in ISO-8601 format, inclusive
+          schema:
+            type: string
+            format: date
+            example: "2026-05-31"
+      responses:
+        '200':
+          description: Payment report summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentReportResponse'
+        '400':
+          description: Invalid filter parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /payments/{paymentId}/pay:
+    post:
+      tags:
+        - РћРїР»Р°С‚С‹
+      summary: Pay existing payment
+      operationId: payPayment
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          description: Payment identifier
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Payment paid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '400':
+          description: Invalid payment identifier
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Payment cannot be paid from current state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /orders/{orderId}/payments:
     get:
       tags:
@@ -1420,6 +1693,262 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Заказ не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+        '409':
+          description: Payment cannot be created for paid/canceled order or amount exceeds remaining debt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/reports/accounting/summary:
+    get:
+      tags:
+        - Accounting reports
+      summary: Get accounting summary report
+      operationId: getAccountingSummaryReport
+      parameters:
+        - name: from
+          in: query
+          required: false
+          description: Start date in ISO-8601 format. Applies to order createdAt and payment paidAt.
+          schema:
+            type: string
+            format: date
+            example: "2026-05-01"
+        - name: to
+          in: query
+          required: false
+          description: End date in ISO-8601 format. Applies to order createdAt and payment paidAt.
+          schema:
+            type: string
+            format: date
+            example: "2026-05-31"
+      responses:
+        '200':
+          description: Accounting summary report
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountingSummaryResponse'
+        '400':
+          description: Invalid filter parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/reports/accounting/payments:
+    get:
+      tags:
+        - Accounting reports
+      summary: Get accounting payments report
+      operationId: getAccountingPaymentsReport
+      parameters:
+        - name: from
+          in: query
+          required: false
+          description: Start paidAt date in ISO-8601 format, inclusive
+          schema:
+            type: string
+            format: date
+            example: "2026-05-01"
+        - name: to
+          in: query
+          required: false
+          description: End paidAt date in ISO-8601 format, inclusive
+          schema:
+            type: string
+            format: date
+            example: "2026-05-31"
+        - name: status
+          in: query
+          required: false
+          description: Payment status filter
+          schema:
+            type: string
+            enum:
+              - PENDING
+              - PAID
+              - FAILED
+        - name: method
+          in: query
+          required: false
+          description: Payment method filter
+          schema:
+            type: string
+            enum:
+              - CASH
+              - CARD
+        - name: clientId
+          in: query
+          required: false
+          description: Client identifier filter
+          schema:
+            type: integer
+            format: int64
+        - name: orderId
+          in: query
+          required: false
+          description: Order identifier filter
+          schema:
+            type: integer
+            format: int64
+        - name: page
+          in: query
+          required: false
+          description: Page number, starts from 1
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: limit
+          in: query
+          required: false
+          description: Page size, maximum 100
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+        - name: sort
+          in: query
+          required: false
+          description: Sort field and direction. Allowed fields are paymentId, orderId, amount, paidAt.
+          schema:
+            type: string
+            default: paidAt,desc
+            example: paidAt,desc
+      responses:
+        '200':
+          description: Accounting payments page
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountingPaymentsPageResponse'
+        '400':
+          description: Invalid filter parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/reports/accounting/debts:
+    get:
+      tags:
+        - Accounting reports
+      summary: Get accounting debts report
+      operationId: getAccountingDebtsReport
+      parameters:
+        - name: from
+          in: query
+          required: false
+          description: Start order createdAt date in ISO-8601 format, inclusive
+          schema:
+            type: string
+            format: date
+            example: "2026-05-01"
+        - name: to
+          in: query
+          required: false
+          description: End order createdAt date in ISO-8601 format, inclusive
+          schema:
+            type: string
+            format: date
+            example: "2026-05-31"
+        - name: clientId
+          in: query
+          required: false
+          description: Client identifier filter
+          schema:
+            type: integer
+            format: int64
+        - name: orderStatus
+          in: query
+          required: false
+          description: Order status filter
+          schema:
+            type: string
+            enum:
+              - CREATED
+              - IN_PROGRESS
+              - COMPLETED
+              - PAID
+              - CANCELED
+        - name: page
+          in: query
+          required: false
+          description: Page number, starts from 1
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: limit
+          in: query
+          required: false
+          description: Page size, maximum 100
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+        - name: sort
+          in: query
+          required: false
+          description: Sort field and direction. Allowed fields are orderId, totalAmount, paidAmount, debtAmount, lastPaymentAt.
+          schema:
+            type: string
+            default: debtAmount,desc
+            example: debtAmount,desc
+      responses:
+        '200':
+          description: Accounting debts page
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountingDebtsPageResponse'
+        '400':
+          description: Invalid filter parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Access denied
           content:
             application/json:
               schema:
@@ -1707,9 +2236,9 @@ components:
         employmentStatus:
           type: string
           enum:
-            - ACTIVE
-            - INACTIVE
-          example: ACTIVE
+            - FREE
+            - BUSY
+          example: FREE
 
     CreateMasterRequest:
       type: object
@@ -1735,19 +2264,10 @@ components:
           type: string
           nullable: true
           example: master@test.com
-        employmentStatus:
-          type: string
-          enum:
-            - ACTIVE
-            - INACTIVE
-          default: ACTIVE
-          example: ACTIVE
-
     UpdateMasterRequest:
       type: object
       required:
         - fullName
-        - employmentStatus
       properties:
         fullName:
           type: string
@@ -1768,13 +2288,6 @@ components:
           type: string
           nullable: true
           example: master.updated@test.com
-        employmentStatus:
-          type: string
-          enum:
-            - ACTIVE
-            - INACTIVE
-          example: ACTIVE
-
     ServiceResponse:
       type: object
       required:
@@ -2009,16 +2522,6 @@ components:
           type: string
           nullable: true
           example: Клиент ожидает
-        status:
-          type: string
-          enum:
-            - CREATED
-            - IN_PROGRESS
-            - COMPLETED
-            - PAID
-            - CANCELED
-          default: CREATED
-          example: CREATED
         plannedCompletionAt:
           type: string
           nullable: true
@@ -2029,7 +2532,6 @@ components:
       required:
         - clientId
         - carId
-        - status
       properties:
         clientId:
           type: integer
@@ -2052,23 +2554,10 @@ components:
           type: string
           nullable: true
           example: Ожидается согласование работ
-        status:
-          type: string
-          enum:
-            - CREATED
-            - IN_PROGRESS
-            - COMPLETED
-            - PAID
-            - CANCELED
-          example: IN_PROGRESS
         plannedCompletionAt:
           type: string
           nullable: true
           example: "2026-03-23T18:00:00"
-        completedAt:
-          type: string
-          nullable: true
-          example: "2026-03-23T17:20:00"
 
     PaymentResponse:
       type: object
@@ -2123,14 +2612,289 @@ components:
             - CASH
             - CARD
           example: CARD
-        paymentStatus:
+
+    PaymentReportResponse:
+      type: object
+      required:
+        - totalCount
+        - totalAmount
+        - paidAmount
+        - pendingAmount
+        - failedAmount
+      properties:
+        totalCount:
+          type: integer
+          example: 12
+        totalAmount:
+          type: string
+          example: "45000.00"
+        paidAmount:
+          type: string
+          example: "40000.00"
+        pendingAmount:
+          type: string
+          example: "5000.00"
+        failedAmount:
+          type: string
+          example: "0.00"
+
+    AccountingSummaryResponse:
+      type: object
+      required:
+        - period
+        - totals
+        - byStatus
+      properties:
+        period:
+          $ref: '#/components/schemas/AccountingPeriodResponse'
+        totals:
+          $ref: '#/components/schemas/AccountingTotalsResponse'
+        byStatus:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountingPaymentStatusResponse'
+
+    AccountingPeriodResponse:
+      type: object
+      properties:
+        from:
+          type: string
+          nullable: true
+          format: date
+          example: "2026-05-01"
+        to:
+          type: string
+          nullable: true
+          format: date
+          example: "2026-05-31"
+
+    AccountingTotalsResponse:
+      type: object
+      required:
+        - revenue
+        - paid
+        - unpaid
+        - ordersCount
+      properties:
+        revenue:
+          type: string
+          example: "90000.00"
+        paid:
+          type: string
+          example: "90000.00"
+        unpaid:
+          type: string
+          example: "35000.00"
+        ordersCount:
+          type: integer
+          example: 42
+
+    AccountingPaymentStatusResponse:
+      type: object
+      required:
+        - status
+        - amount
+        - count
+      properties:
+        status:
           type: string
           enum:
             - PENDING
             - PAID
             - FAILED
-          default: PAID
           example: PAID
+        amount:
+          type: string
+          example: "90000.00"
+        count:
+          type: integer
+          example: 30
+
+    AccountingPaymentsPageResponse:
+      type: object
+      required:
+        - items
+        - page
+        - limit
+        - total
+        - totals
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountingPaymentItemResponse'
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 20
+        total:
+          type: integer
+          example: 120
+        totals:
+          $ref: '#/components/schemas/AccountingPaymentsTotalsResponse'
+
+    AccountingPaymentsTotalsResponse:
+      type: object
+      required:
+        - amount
+        - count
+        - paidAmount
+        - pendingAmount
+        - failedAmount
+      properties:
+        amount:
+          type: string
+          example: "17650.00"
+        count:
+          type: integer
+          example: 2
+        paidAmount:
+          type: string
+          example: "17650.00"
+        pendingAmount:
+          type: string
+          example: "0.00"
+        failedAmount:
+          type: string
+          example: "0.00"
+
+    AccountingPaymentItemResponse:
+      type: object
+      required:
+        - paymentId
+        - orderId
+        - clientName
+        - car
+        - amount
+        - status
+        - method
+      properties:
+        paymentId:
+          type: integer
+          format: int64
+          example: 1
+        orderId:
+          type: integer
+          format: int64
+          example: 12
+        clientName:
+          type: string
+          example: Ivan Petrov
+        car:
+          type: string
+          example: Toyota Camry
+        amount:
+          type: string
+          example: "15000.00"
+        status:
+          type: string
+          enum:
+            - PENDING
+            - PAID
+            - FAILED
+          example: PAID
+        method:
+          type: string
+          enum:
+            - CASH
+            - CARD
+          example: CARD
+        paidAt:
+          type: string
+          nullable: true
+          example: "2026-05-03T12:30:00"
+
+    AccountingDebtsPageResponse:
+      type: object
+      required:
+        - items
+        - page
+        - limit
+        - total
+        - totals
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountingDebtItemResponse'
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 20
+        total:
+          type: integer
+          example: 35
+        totals:
+          $ref: '#/components/schemas/AccountingDebtsTotalsResponse'
+
+    AccountingDebtsTotalsResponse:
+      type: object
+      required:
+        - totalAmount
+        - paidAmount
+        - debtAmount
+        - ordersCount
+      properties:
+        totalAmount:
+          type: string
+          example: "90000.00"
+        paidAmount:
+          type: string
+          example: "30000.00"
+        debtAmount:
+          type: string
+          example: "60000.00"
+        ordersCount:
+          type: integer
+          example: 3
+
+    AccountingDebtItemResponse:
+      type: object
+      required:
+        - orderId
+        - clientName
+        - car
+        - totalAmount
+        - paidAmount
+        - debtAmount
+        - orderStatus
+      properties:
+        orderId:
+          type: integer
+          format: int64
+          example: 15
+        clientName:
+          type: string
+          example: Anna Smirnova
+        car:
+          type: string
+          example: Kia Rio
+        totalAmount:
+          type: string
+          example: "30000.00"
+        paidAmount:
+          type: string
+          example: "10000.00"
+        debtAmount:
+          type: string
+          example: "20000.00"
+        orderStatus:
+          type: string
+          enum:
+            - CREATED
+            - IN_PROGRESS
+            - COMPLETED
+            - PAID
+            - CANCELED
+          example: IN_PROGRESS
+        lastPaymentAt:
+          type: string
+          nullable: true
+          example: "2026-05-04T09:00:00"
 
     OrderPartResponse:
       type: object

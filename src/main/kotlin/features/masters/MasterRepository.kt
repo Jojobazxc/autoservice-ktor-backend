@@ -1,8 +1,13 @@
 package com.example.features.masters
 
+import com.example.common.enums.EmploymentStatus
+import com.example.common.enums.OrderStatus
 import com.example.database.tables.MastersTable
+import com.example.database.tables.OrdersTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class MasterRepository {
@@ -28,7 +33,7 @@ class MasterRepository {
             it[experienceYears] = request.experienceYears
             it[phone] = request.phone
             it[email] = request.email
-            it[employmentStatus] = request.employmentStatus
+            it[employmentStatus] = EmploymentStatus.FREE
         }[MastersTable.id]
 
         MastersTable
@@ -45,7 +50,6 @@ class MasterRepository {
             it[experienceYears] = request.experienceYears
             it[phone] = request.phone
             it[email] = request.email
-            it[employmentStatus] = request.employmentStatus
         }
         updatedRows > 0
     }
@@ -63,7 +67,20 @@ class MasterRepository {
             experienceYears = row[MastersTable.experienceYears],
             phone = row[MastersTable.phone],
             email = row[MastersTable.email],
-            employmentStatus = row[MastersTable.employmentStatus]
+            employmentStatus = calculateEmploymentStatus(row[MastersTable.id])
         )
+    }
+
+    private fun calculateEmploymentStatus(masterId: Long): EmploymentStatus {
+        val hasActiveOrder = OrdersTable
+            .selectAll()
+            .where {
+                (OrdersTable.masterId eq masterId) and
+                        ((OrdersTable.status eq OrderStatus.CREATED) or
+                                (OrdersTable.status eq OrderStatus.IN_PROGRESS))
+            }
+            .any()
+
+        return if (hasActiveOrder) EmploymentStatus.BUSY else EmploymentStatus.FREE
     }
 }

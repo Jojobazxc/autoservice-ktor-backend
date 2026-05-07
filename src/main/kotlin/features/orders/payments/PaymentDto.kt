@@ -15,8 +15,16 @@ data class PaymentResponse(
 )
 
 @Serializable
+data class PaymentReportResponse(
+    val totalCount: Int,
+    val totalAmount: String,
+    val paidAmount: String,
+    val pendingAmount: String,
+    val failedAmount: String
+)
+
+@Serializable
 data class CreatePaymentRequest(
     val amount: String,
-    val paymentMethod: PaymentMethod,
-    val paymentStatus: PaymentStatus = PaymentStatus.PAID
+    val paymentMethod: PaymentMethod
 )
