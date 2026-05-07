@@ -20,8 +20,7 @@ data class CreateMasterRequest(
     val specialization: String? = null,
     val experienceYears: Int? = null,
     val phone: String? = null,
-    val email: String? = null,
-    val employmentStatus: EmploymentStatus = EmploymentStatus.ACTIVE
+    val email: String? = null
 )
 
 @Serializable
@@ -30,6 +29,5 @@ data class UpdateMasterRequest(
     val specialization: String? = null,
     val experienceYears: Int? = null,
     val phone: String? = null,
-    val email: String? = null,
-    val employmentStatus: EmploymentStatus
+    val email: String? = null
 )

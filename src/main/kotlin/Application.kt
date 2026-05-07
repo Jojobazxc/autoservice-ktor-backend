@@ -12,6 +12,7 @@ import com.example.features.orders.parts.configureOrderPartRoutes
 import com.example.features.orders.payments.configurePaymentRoutes
 import com.example.features.orders.services.configureOrderServiceRoutes
 import com.example.features.parts.configurePartRoutes
+import com.example.features.reports.configureAccountingReportRoutes
 import com.example.features.services.configureServiceRoutes
 import com.example.plugins.configureAuthentication
 import com.example.plugins.configureMonitoring
@@ -43,6 +44,7 @@ fun Application.module() {
     configureOrderPartRoutes()
     configureOrderDetailsRoutes()
     configurePaymentRoutes()
+    configureAccountingReportRoutes()
     configureCarRoutes()
     configureClientRoutes()
     configureMasterRoutes()

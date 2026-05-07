@@ -25,7 +25,6 @@ data class CreateOrderRequest(
     val masterId: Long? = null,
     val description: String? = null,
     val comment: String? = null,
-    val status: OrderStatus = OrderStatus.CREATED,
     val plannedCompletionAt: String? = null
 )
 
@@ -36,7 +35,5 @@ data class UpdateOrderRequest(
     val masterId: Long? = null,
     val description: String? = null,
     val comment: String? = null,
-    val status: OrderStatus,
-    val plannedCompletionAt: String? = null,
-    val completedAt: String? = null
+    val plannedCompletionAt: String? = null
 )
